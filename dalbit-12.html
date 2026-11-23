@@ -217,7 +217,7 @@ function renderMe(){
     const others=ps.filter(p=>p!==me);
     h+=`<div class="task wd ${ST[sid]&&ST[sid].s==='ok'?'done':''}"><div class="p">2순위 · 1순위 칸이 차면 바로 ${chip(sid)}</div><div class="d">${d}(수) 1코트 18-22시</div><div class="r">같이 누르기: ${others.join(', ')}<br>18-20 + 20-22 두 타임을 한 번에 담기</div>${acts(sid)}</div>`;
   }
-  h+='<div class="r" style="color:var(--sub);font-size:14px;margin-top:6px">맨 위에 빨간 실패 칸이 뜨면 수요일보다 그 칸이 먼저예요. 같은 칸을 누군가 «잡았어요» 누르면 모두에게 «잡음»으로 보여요.</div>';
+  h+='<div class="r" style="color:var(--sub);font-size:14px;margin-top:6px">맨 위에 빨간 실패 칸이 뜨면 수요일보다 그 칸이 먼저예요. 겹치기 중 한 명이라도 «잡았어요» 누르면 그 칸은 «잡음»이에요. 다른 사람이 실패를 눌러도 잡음은 안 바뀌어요.</div>';
   $('#me').innerHTML=h;
 }
 
@@ -226,8 +226,9 @@ function renderAll(){renderBoard();renderNames();renderMe();renderDate();}
 async function mark(sid,s){
   const cur=ST[sid];
   if(cur&&cur.s===s){delete ST[sid];renderAll();await fetch(`${DB}/${sid}.json`,{method:'DELETE'}).catch(()=>{});return}
+  if(s==='fail'&&cur&&cur.s==='ok'&&cur.by!==(me||'누군가')){alertBar(`이미 ${cur.by}님이 잡았어요. 실패로 바꾸지 않아요 👍`);return}
   const v={s,by:me||'누군가',t:Date.now()};ST[sid]=v;renderAll();
-  try{const r=await fetch(`${DB}/${sid}.json`,{method:'PUT',body:JSON.stringify(v)});if(!r.ok)throw 0}catch(e){alertBar('저장이 안 됐어요. 인터넷 확인 후 다시 눌러 주세요')}
+  try{const r=await fetch(`${DB}/${sid}.json`,{method:'PUT',body:JSON.stringify(v)});if(r.status===401||r.status===403){alertBar('그 사이 다른 회원이 잡았어요 👍');return}if(!r.ok)throw 0}catch(e){alertBar('저장이 안 됐어요. 인터넷 확인 후 다시 눌러 주세요')}
 }
 function alertBar(t){const n=document.createElement('div');n.className='alarm';n.textContent=t;$('#board').prepend(n);setTimeout(()=>n.remove(),4000)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-sid]');if(!b)return;if(!me&&b.dataset.s){tab(true);window.scrollTo({top:$('#names').offsetTop-20,behavior:'smooth'});return}mark(b.dataset.sid,b.dataset.s)});
