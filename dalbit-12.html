@@ -92,7 +92,7 @@ h1{font-size:22px;margin:8px 0 2px}
     <ol>
       <li><b>1순위</b> 오픈 순간 전원 주말. 주말 06-10시(2타임 한 번에)</li>
       <li>같은 칸에 두 명이면 같이 누르기. 다른 사람이 잡으면 내 쪽 실패가 정상</li>
-      <li>끝나면 내 카드에서 <b style="color:var(--ok)">잡았어요</b> / <b style="color:#e03131">실패</b> 누르기 → 놓친 칸은 모두의 화면 맨 위에 빨갛게 떠요. 단톡 대신 이 페이지를 보세요</li>
+      <li>끝나면 내 카드에서 <b style="color:var(--ok)">잡았어요</b> / <b style="color:#e03131">실패</b> 누르기 → 모두의 화면에 바로 떠요. 단톡 대신 이 페이지를 보세요</li>
       <li><b style="color:var(--wd)">2순위</b> 내 1순위 칸이 차면 수요일 1코트 18-22시(2타임 한 번에)</li>
       <li>열리기 10분 전: 스매시 로그인 확인, 결제수단 미리 등록</li>
     </ol>
@@ -157,7 +157,7 @@ function renderBoard(){
   const wok=ok.filter(x=>x.we).length, dok=ok.length-wok;
   const fails=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='fail').sort((a,b)=>b.we-a.we);
   let h=`<div class="sum">12월 예약 현황 <span>주말 ${wok}/16 · 수요일 ${dok}/5 잡음</span></div>`;
-  if(fails.length)h+=`<div class="alarm"><b>❌ 놓친 칸 · 같은 날 다른 코트가 비어 있으면 손 빈 사람이 대신 잡아 주세요 (주말 우선)</b>${fails.map(x=>`<div>${x.label} ${x.we?'06-10시':'18-22시'} <span style="font-weight:400">(${ST[x.id].by})</span></div>`).join('')}<span style="font-size:13px">다른 코트로 대신 잡았으면 날짜별 탭 맨 아래에서 «잡았어요» 누르고, 몇 코트인지 단톡에 한 줄</span></div>`;
+  if(fails.length)h+=`<div class="alarm"><b>❌ 놓친 칸</b>${fails.map(x=>`<div>${x.label} ${x.we?'06-10시':'18-22시'} <span style="font-weight:400">(${ST[x.id].by})</span></div>`).join('')}</div>`;
   h+=calendar();
   h+=`<div class="net">${online?'● 실시간 연결됨':'○ 연결 중…'}</div>`;
   $('#board').innerHTML=h;
@@ -192,8 +192,6 @@ function renderDate(){
     h+=`<div class="day" id="d${d.split('/')[1]}"><h3>${d}(수) <span class="tag wd">수요일</span></h3>
       <div class="row"><div class="ct">1코트</div><div class="who">${ps.map(nm).join(', ')}${chip(id(d))}</div></div></div>`;
   }
-  const fails=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='fail');
-  if(fails.length){h+='<div class="sec">놓친 칸 · 다른 코트로 대신 잡았으면 여기서 «잡았어요»</div>';for(const x of fails)h+=`<div class="day"><h3>${x.label}</h3>${acts(x.id)}</div>`;}
   $('#vDate').innerHTML=h;
 }
 
@@ -217,7 +215,7 @@ function renderMe(){
     const others=ps.filter(p=>p!==me);
     h+=`<div class="task wd ${ST[sid]&&ST[sid].s==='ok'?'done':''}"><div class="p">2순위 · 1순위 칸이 차면 바로 ${chip(sid)}</div><div class="d">${d}(수) 1코트 18-22시</div><div class="r">같이 누르기: ${others.join(', ')}<br>18-20 + 20-22 두 타임을 한 번에 담기</div>${acts(sid)}</div>`;
   }
-  h+='<div class="r" style="color:var(--sub);font-size:14px;margin-top:6px">맨 위에 빨간 «놓친 칸»이 뜨면, 수요일보다 그날 다른 코트를 대신 잡는 게 먼저예요. 겹치기 중 한 명이라도 «잡았어요» 누르면 그 칸은 «잡음»이에요. 다른 사람이 실패를 눌러도 잡음은 안 바뀌어요.</div>';
+  h+='<div class="r" style="color:var(--sub);font-size:14px;margin-top:6px">겹치기 중 한 명이라도 «잡았어요» 누르면 그 칸은 «잡음»이에요. 다른 사람이 실패를 눌러도 잡음은 안 바뀌어요.</div>';
   $('#me').innerHTML=h;
 }
 
