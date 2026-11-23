@@ -77,10 +77,10 @@ h1{font-size:22px;margin:8px 0 2px}
   </div>
   <div id="vDate" hidden></div>
 
-  <p class="foot">스매시 버튼은 달빛 모나크 테니스 클럽(하드) 화면으로 가요. 날짜·코트·시간은 직접 골라야 해요.<br>카톡에서 열리면 오른쪽 위 메뉴 → 다른 브라우저로 열기.</p>
+  <p class="foot">아래 버튼은 스매시 앱을 바로 열어요. 앱에서 코트 탭 → «달빛» → 달빛 모나크 테니스 클럽 (하드) → 날짜·시간 고르기. 미리 한 번 «달빛»으로 찾아 두면 앱이 기억해요.<br>앱이 안 열리면: <a href="https://smaxh.com/ko-KR/courts/bb29a12d-1e76-421c-9e7b-c7443bcacd8e" target="_blank" rel="noopener">웹에서 달빛 모나크(하드) 보기</a></p>
 </div>
 
-<div class="go"><a id="smash" href="https://smaxh.com/ko-KR/courts/bb29a12d-1e76-421c-9e7b-c7443bcacd8e" target="_blank" rel="noopener">스매시 달빛 테니스장 열기<small>달빛 모나크 테니스 클럽 (하드)</small></a></div>
+<div class="go"><a id="smash" href="smaxh://">스매시 앱 바로 열기<small>앱에서 코트 탭 → 달빛 모나크 테니스 클럽 (하드)</small></a></div>
 
 <script>
 const PEOPLE=['김상열','김재홍','동진웅','심태현','임우기','최종교','박병규','이길춘','이결','강은수','황기철','서정범','맹승호','이재상','박정우','조용걸','최현민','이진영','유상용','김시형','유형민','양창규'];
@@ -156,6 +156,7 @@ function tab(p){
 $('#tPerson').onclick=()=>tab(true);$('#tDate').onclick=()=>tab(false);
 renderNames();renderMe();renderDate();
 if(location.hash==='#date')tab(false);
+if(/Android/i.test(navigator.userAgent))$('#smash').href='intent://#Intent;scheme=smaxh;package=com.tennisclientapp;end';
 </script>
 </body>
 </html>
