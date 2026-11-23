@@ -52,6 +52,7 @@ h1{font-size:22px;margin:8px 0 2px}
 .names button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:10px 4px;font:inherit;font-size:15px}
 .names button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .me{margin-top:14px}
+.alarmbtn{display:block;text-align:center;background:#fff4e6;border:2px solid var(--we);color:var(--we);text-decoration:none;font-weight:800;font-size:19px;padding:12px;border-radius:14px;margin:4px 0 10px}.alarmbtn small{display:block;font-size:14px;font-weight:600;color:var(--ink)}
 .task{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--we);border-radius:12px;padding:12px 14px;margin:8px 0}
 .task.wd{border-left-color:var(--wd)}
 .task .p{font-size:12px;font-weight:700;color:var(--we)}
@@ -98,6 +99,7 @@ h1{font-size:22px;margin:8px 0 2px}
 
   <div class="rules">
     <ol>
+      <li><b>11/25(수) 오전 10시</b> 오픈</li>
       <li><b>1순위</b> 오픈 즉시 <b>주말</b> 06-10시</li>
       <li><b style="color:var(--wd)">2순위</b> 수요일 1코트 18-22시</li>
       <li><b>1인 4시간</b> 예약<div class="ex">예) 주말은 06·07·08·09 네 칸을 이어서 누르고 «예약하기»
@@ -210,9 +212,18 @@ function renderNames(){
   $('#names').querySelectorAll('button').forEach(b=>b.onclick=()=>{me=b.textContent;try{localStorage.setItem('dalbit12_me',me)}catch(e){};renderAll();});
 }
 
+// 예약 오픈 11/25(수) 10:00 — 사람별 .ics(10분·5분 전·정각 알람), 안드로이드는 구글 캘린더
+function alarmBtn(){
+  const i=PEOPLE.indexOf(me)+1,f='dalbit-12/p'+String(i).padStart(2,'0')+'.ics';
+  const first=(()=>{for(const [d,w,c1,c2] of WE){if(c1.includes(me))return `${d}(${w}) 1코트`;if(c2.includes(me))return `${d}(${w}) 2코트`}return ''})();
+  const g='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent('달빛 코트 예약 오픈 · '+first+' 06-10시')+'&dates=20261125T010000Z/20261125T011500Z&ctz=Asia/Seoul&details='+encodeURIComponent('스매시 앱 · 달빛 모나크(하드)\n'+location.href.split('?')[0]);
+  const and=/Android/i.test(navigator.userAgent);
+  return `<a class="alarmbtn" href="${and?g:f}" ${and?'target="_blank" rel="noopener"':''}>⏰ 오픈 알람 받기<small>11/25(수) 오전 10:00 예약 오픈 · ${and?'구글 캘린더에 추가':'10분 전·5분 전·정각 알람'}</small></a>`;
+}
+
 function renderMe(){
   if(!me){$('#me').innerHTML='<div class="empty">위에서 내 이름을 눌러 주세요</div>';return}
-  let h='';
+  let h=alarmBtn();
   for(const [d,w,c1,c2] of WE){
     for(const [n,ct,a] of [[1,'1코트',c1],[2,'2코트',c2]]){
       const i=a.indexOf(me); if(i<0)continue; const sid=id(d,n);

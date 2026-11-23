@@ -1,0 +1,31 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//today119//dalbit//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:dalbit12-open-p11@today119.github.io
+DTSTAMP:20261123T053500Z
+DTSTART:20261125T010000Z
+DTEND:20261125T011500Z
+SUMMARY:달빛 코트 예약 오픈 · 12/27(일) 1코트 06-10시
+DESCRIPTION:1순위(오픈 즉시): 12/27(일) 1코트 06-10시 담당\n2순위: 12/16(수) 1코트 18-22시\n1인 4시간 연속 선택 → 예약하기\n끝나면 페이지에서 잡았어요/실패\nhttps://today119.github.io/tennis-cal/dalbit-12.html
+URL:https://today119.github.io/tennis-cal/dalbit-12.html
+LOCATION:스매시 앱 · 달빛 모나크 테니스 클럽(하드)
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:10분 뒤 코트 예약 오픈 · 스매시 로그인 확인
+TRIGGER:-PT10M
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:5분 뒤 코트 예약 오픈 · 달빛 하드 화면 열어 두기
+TRIGGER:-PT5M
+END:VALARM
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:지금 오픈! 주말 담당 칸부터
+TRIGGER:PT0M
+END:VALARM
+END:VEVENT
+END:VCALENDAR
