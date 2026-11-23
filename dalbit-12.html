@@ -67,6 +67,17 @@ h1{font-size:22px;margin:8px 0 2px}
 .acts button.ok.on{background:var(--ok);border-color:var(--ok);color:#fff}
 .acts button.fail.on{background:#e03131;border-color:#e03131;color:#fff}
 .task.done{opacity:.75}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:10px}
+.cal .h{font-size:11px;color:var(--sub);text-align:center;padding:2px 0}
+.cal .h.sun{color:#e03131}.cal .h.sat{color:var(--wd)}
+.cal .c{min-height:50px;border-radius:8px;background:#faf8f4;padding:3px 2px;text-align:center;font-size:12px;color:var(--sub)}
+.cal .c.has{background:#fff;border:1px solid var(--line);color:var(--ink);cursor:pointer}
+.cal .c .n{font-weight:700;font-size:13px}
+.cal .c .b{display:flex;justify-content:center;gap:2px;margin-top:3px}
+.cal .c .b i{font-style:normal;font-size:10px;font-weight:700;min-width:16px;padding:1px 0;border-radius:4px;background:#e9ecef;color:#868e96}
+.cal .c .b i.ok{background:var(--ok);color:#fff}.cal .c .b i.fail{background:#e03131;color:#fff}
+.legend{display:flex;gap:10px;font-size:11px;color:var(--sub);margin-top:6px;justify-content:center}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:3px;vertical-align:-1px}
 .net{font-size:12px;color:var(--sub);text-align:right;margin-top:4px}
 @media (max-width:360px){.names{grid-template-columns:repeat(3,1fr)}}
 </style>
@@ -145,10 +156,26 @@ function renderBoard(){
   const ok=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='ok');
   const wok=ok.filter(x=>x.we).length, dok=ok.length-wok;
   const fails=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='fail').sort((a,b)=>b.we-a.we);
-  let h=`<div class="sum">예약 현황 <span>주말 ${wok}/16 · 수요일 ${dok}/5 잡음</span></div>`;
+  let h=`<div class="sum">12월 예약 현황 <span>주말 ${wok}/16 · 수요일 ${dok}/5 잡음</span></div>`;
   if(fails.length)h+=`<div class="alarm"><b>🚨 실패 칸 · 손 빈 사람은 이 칸 먼저 (주말이 우선)</b>${fails.map(x=>`<div>${x.label} ${x.we?'06-10시':'18-22시'} <span style="font-weight:400">(${ST[x.id].by})</span></div>`).join('')}<span style="font-size:13px">잡으면 아래 날짜별 탭에서 그 칸 «잡았어요» 눌러 주세요</span></div>`;
+  h+=calendar();
   h+=`<div class="net">${online?'● 실시간 연결됨':'○ 연결 중…'}</div>`;
   $('#board').innerHTML=h;
+  $('#board').querySelectorAll('.c.has').forEach(c=>c.onclick=()=>{tab(false);const el=document.getElementById('d'+c.dataset.d);if(el)el.scrollIntoView({behavior:'smooth',block:'center'})});
+}
+
+function calendar(){
+  const by={};for(const x of SLOTS){const d=+x.label.split('/')[1].split('(')[0];(by[d]=by[d]||[]).push(x)}
+  let h='<div class="cal">'+['일','월','화','수','목','금','토'].map((w,i)=>`<div class="h ${i==0?'sun':i==6?'sat':''}">${w}</div>`).join('');
+  const first=new Date(2026,11,1).getDay();
+  for(let i=0;i<first;i++)h+='<div></div>';
+  for(let d=1;d<=31;d++){
+    const xs=by[d];
+    if(!xs){h+=`<div class="c"><div class="n">${d}</div></div>`;continue}
+    const b=xs.map(x=>{const v=ST[x.id];const n=x.we?x.label.match(/(\d)코트/)[1]:'1';return `<i class="${v?v.s:''}">${n}</i>`}).join('');
+    h+=`<div class="c has" data-d="${d}"><div class="n">${d}</div><div class="b">${b}</div></div>`;
+  }
+  return h+'</div><div class="legend"><span><i style="background:#e9ecef"></i>대기</span><span><i style="background:var(--ok)"></i>잡음</span><span><i style="background:#e03131"></i>실패</span><span>숫자 = 코트</span></div>';
 }
 
 function acts(sid){const v=ST[sid]||{};return `<div class="acts"><button class="ok ${v.s==='ok'?'on':''}" data-sid="${sid}" data-s="ok">✅ 잡았어요</button><button class="fail ${v.s==='fail'?'on':''}" data-sid="${sid}" data-s="fail">❌ 실패</button></div>`}
@@ -156,13 +183,13 @@ function acts(sid){const v=ST[sid]||{};return `<div class="acts"><button class="
 function renderDate(){
   let h='<div class="sec">1순위 · 주말 06-10시 (2타임 한 번에)</div>';
   for(const [d,w,c1,c2] of WE){
-    h+=`<div class="day"><h3>${d}(${w}) <span class="tag we">주말</span></h3>
+    h+=`<div class="day" id="d${d.split('/')[1]}"><h3>${d}(${w}) <span class="tag we">주말</span></h3>
       <div class="row"><div class="ct">1코트</div><div class="who">${team(c1)}${chip(id(d,1))}</div></div>
       <div class="row"><div class="ct">2코트</div><div class="who">${team(c2)}${chip(id(d,2))}</div></div></div>`;
   }
   h+='<div class="sec">2순위 · 수요일 1코트 18-22시 (같이 누르기)</div>';
   for(const [d,ps] of WD){
-    h+=`<div class="day"><h3>${d}(수) <span class="tag wd">수요일</span></h3>
+    h+=`<div class="day" id="d${d.split('/')[1]}"><h3>${d}(수) <span class="tag wd">수요일</span></h3>
       <div class="row"><div class="ct">1코트</div><div class="who">${ps.map(nm).join(', ')}${chip(id(d))}</div></div></div>`;
   }
   const fails=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='fail');
