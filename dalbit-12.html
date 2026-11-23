@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>12월 달빛 코트 예약</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="달빛 예약">
+<meta name="theme-color" content="#f6f4ef">
+<script>
+// 카톡 안 브라우저는 앱 열기(smaxh://)를 막아서 바깥 브라우저(사파리·크롬)로 자동으로 다시 연다
+if(/KAKAOTALK/i.test(navigator.userAgent)){location.href='kakaotalk://web/openExternal?url='+encodeURIComponent(location.href);}
+</script>
 <meta name="description" content="12월 달빛 모나크 테니스 클럽 코트 예약 담당표 — 날짜별·사람별 보기">
 <style>
 :root{--bg:#f6f4ef;--card:#fff;--ink:#1d2430;--sub:#6b7280;--line:#e5e1d8;--we:#e8590c;--we-bg:#fff1e6;--wd:#1c7ed6;--wd-bg:#e7f1fc;--ok:#2b8a3e;--btn:#111827}
@@ -33,7 +40,7 @@ h1{font-size:22px;margin:8px 0 2px}
 .who .x{color:var(--sub);font-size:13px}
 .hl{background:#fff3bf;border-radius:4px;padding:0 3px}
 .names{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.names button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 4px;font:inherit;font-size:15px}
+.names button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:10px 4px;font:inherit;font-size:15px}
 .names button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .me{margin-top:14px}
 .task{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--we);border-radius:12px;padding:12px 14px;margin:8px 0}
@@ -47,6 +54,20 @@ h1{font-size:22px;margin:8px 0 2px}
 .go a{display:block;max-width:528px;margin:0 auto;text-align:center;background:var(--btn);color:#fff;text-decoration:none;font-weight:700;font-size:17px;padding:15px;border-radius:14px}
 .go small{display:block;font-weight:400;font-size:12px;opacity:.75}
 .foot{color:var(--sub);font-size:12px;margin-top:18px}
+.board{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:12px}
+.board .sum{display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.board .sum span{font-size:13px;color:var(--sub);font-weight:400}
+.alarm{margin-top:8px;background:#fff0f0;border:1px solid #ffc9c9;color:#c92a2a;border-radius:10px;padding:10px 12px;font-size:15px}
+.alarm b{display:block;margin-bottom:2px}
+.alarm div{font-weight:700}
+.st{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:1px}
+.st.ok{background:#ebfbee;color:var(--ok)}.st.fail{background:#fff0f0;color:#c92a2a}.st.wait{background:#f1f3f5;color:var(--sub)}
+.acts{display:flex;gap:8px;margin-top:10px}
+.acts button{flex:1;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:11px 4px;font:inherit;font-weight:700;font-size:15px}
+.acts button.ok.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.acts button.fail.on{background:#e03131;border-color:#e03131;color:#fff}
+.task.done{opacity:.75}
+.net{font-size:12px;color:var(--sub);text-align:right;margin-top:4px}
 @media (max-width:360px){.names{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
@@ -60,11 +81,13 @@ h1{font-size:22px;margin:8px 0 2px}
     <ol>
       <li><b>1순위</b> 오픈 순간 전원 주말. 주말 06-10시(2타임 한 번에)</li>
       <li>같은 칸에 두 명이면 같이 누르기. 다른 사람이 잡으면 내 쪽 실패가 정상</li>
-      <li>실패하면 바로 단톡에 «○일 ○코트 실패» → 보는 사람이 그 칸부터</li>
+      <li>끝나면 내 카드에서 <b style="color:var(--ok)">잡았어요</b> / <b style="color:#e03131">실패</b> 누르기 → 실패 칸은 모두의 화면 맨 위에 빨갛게 떠요. 단톡 대신 이 페이지를 보세요</li>
       <li><b style="color:var(--wd)">2순위</b> 내 1순위 칸이 차면 수요일 1코트 18-22시(2타임 한 번에)</li>
       <li>열리기 10분 전: 스매시 로그인 확인, 결제수단 미리 등록</li>
     </ol>
   </div>
+
+  <div class="board" id="board"></div>
 
   <div class="tabs" role="tablist">
     <button id="tPerson" class="on" role="tab">내 할 일</button>
@@ -77,7 +100,7 @@ h1{font-size:22px;margin:8px 0 2px}
   </div>
   <div id="vDate" hidden></div>
 
-  <p class="foot">아래 버튼은 스매시 앱을 바로 열어요. 앱에서 코트 탭 → «달빛» → 달빛 모나크 테니스 클럽 (하드) → 날짜·시간 고르기. 미리 한 번 «달빛»으로 찾아 두면 앱이 기억해요.<br>앱이 안 열리면: <a href="https://smaxh.com/ko-KR/courts/bb29a12d-1e76-421c-9e7b-c7443bcacd8e" target="_blank" rel="noopener">웹에서 달빛 모나크(하드) 보기</a></p>
+  <p class="foot">아래 버튼은 스매시 앱을 바로 열어요. 앱에서 코트 탭 → «달빛» → 달빛 모나크 테니스 클럽 (하드) → 날짜·시간 고르기. 미리 한 번 «달빛»으로 찾아 두면 앱이 기억해요.<br>홈 화면에 추가해 두면 앱처럼 바로 열려요 (사파리 공유 버튼 → 홈 화면에 추가 / 크롬 메뉴 → 홈 화면에 추가).<br>앱이 안 열리면: <a href="https://smaxh.com/ko-KR/courts/bb29a12d-1e76-421c-9e7b-c7443bcacd8e" target="_blank" rel="noopener">웹에서 달빛 모나크(하드) 보기</a></p>
 </div>
 
 <div class="go"><a id="smash" href="smaxh://">스매시 앱 바로 열기<small>앱에서 코트 탭 → 달빛 모나크 테니스 클럽 (하드)</small></a></div>
@@ -107,46 +130,93 @@ const $=s=>document.querySelector(s);
 let me=null;try{me=localStorage.getItem('dalbit12_me')}catch(e){}
 if(!PEOPLE.includes(me))me=null;
 
+const DB='https://matchmaker-28187-default-rtdb.asia-southeast1.firebasedatabase.app/court_res/dalbit2612';
+const id=(d,c)=>(c?'we-':'wd-')+d.split('/').map(x=>x.padStart(2,'0')).join('')+(c?'-'+c:'');
+const SLOTS=[];
+for(const [d,w,c1,c2] of WE){SLOTS.push({id:id(d,1),label:`${d}(${w}) 1코트`,we:1,ps:c1});SLOTS.push({id:id(d,2),label:`${d}(${w}) 2코트`,we:1,ps:c2});}
+for(const [d,ps] of WD)SLOTS.push({id:id(d),label:`${d}(수) 1코트`,we:0,ps});
+let ST={},online=false;
+
 function nm(n){return me===n?`<span class="hl">${n}</span>`:n}
 function team(a){return `<span class="m">${nm(a[0])}</span>`+(a.length>1?` <span class="x">+ 겹치기 ${a.slice(1).map(nm).join(', ')}</span>`:'')}
+function chip(sid){const v=ST[sid];if(!v)return '<span class="st wait">대기</span>';return v.s==='ok'?`<span class="st ok">잡음 · ${v.by}</span>`:`<span class="st fail">실패 · ${v.by}</span>`}
+
+function renderBoard(){
+  const ok=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='ok');
+  const wok=ok.filter(x=>x.we).length, dok=ok.length-wok;
+  const fails=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='fail').sort((a,b)=>b.we-a.we);
+  let h=`<div class="sum">예약 현황 <span>주말 ${wok}/16 · 수요일 ${dok}/5 잡음</span></div>`;
+  if(fails.length)h+=`<div class="alarm"><b>🚨 실패 칸 · 손 빈 사람은 이 칸 먼저 (주말이 우선)</b>${fails.map(x=>`<div>${x.label} ${x.we?'06-10시':'18-22시'} <span style="font-weight:400">(${ST[x.id].by})</span></div>`).join('')}<span style="font-size:13px">잡으면 아래 날짜별 탭에서 그 칸 «잡았어요» 눌러 주세요</span></div>`;
+  h+=`<div class="net">${online?'● 실시간 연결됨':'○ 연결 중…'}</div>`;
+  $('#board').innerHTML=h;
+}
+
+function acts(sid){const v=ST[sid]||{};return `<div class="acts"><button class="ok ${v.s==='ok'?'on':''}" data-sid="${sid}" data-s="ok">✅ 잡았어요</button><button class="fail ${v.s==='fail'?'on':''}" data-sid="${sid}" data-s="fail">❌ 실패</button></div>`}
 
 function renderDate(){
   let h='<div class="sec">1순위 · 주말 06-10시 (2타임 한 번에)</div>';
   for(const [d,w,c1,c2] of WE){
     h+=`<div class="day"><h3>${d}(${w}) <span class="tag we">주말</span></h3>
-      <div class="row"><div class="ct">1코트</div><div class="who">${team(c1)}</div></div>
-      <div class="row"><div class="ct">2코트</div><div class="who">${team(c2)}</div></div></div>`;
+      <div class="row"><div class="ct">1코트</div><div class="who">${team(c1)}${chip(id(d,1))}</div></div>
+      <div class="row"><div class="ct">2코트</div><div class="who">${team(c2)}${chip(id(d,2))}</div></div></div>`;
   }
   h+='<div class="sec">2순위 · 수요일 1코트 18-22시 (같이 누르기)</div>';
   for(const [d,ps] of WD){
     h+=`<div class="day"><h3>${d}(수) <span class="tag wd">수요일</span></h3>
-      <div class="row"><div class="ct">1코트</div><div class="who">${ps.map(nm).join(', ')}</div></div></div>`;
+      <div class="row"><div class="ct">1코트</div><div class="who">${ps.map(nm).join(', ')}${chip(id(d))}</div></div></div>`;
   }
+  const fails=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='fail');
+  if(fails.length){h+='<div class="sec">실패 칸 대신 잡았으면 여기서 누르기</div>';for(const x of fails)h+=`<div class="day"><h3>${x.label}</h3>${acts(x.id)}</div>`;}
   $('#vDate').innerHTML=h;
 }
 
 function renderNames(){
   $('#names').innerHTML=PEOPLE.map(p=>`<button class="${p===me?'on':''}">${p}</button>`).join('');
-  $('#names').querySelectorAll('button').forEach(b=>b.onclick=()=>{me=b.textContent;try{localStorage.setItem('dalbit12_me',me)}catch(e){};renderNames();renderMe();renderDate();});
+  $('#names').querySelectorAll('button').forEach(b=>b.onclick=()=>{me=b.textContent;try{localStorage.setItem('dalbit12_me',me)}catch(e){};renderAll();});
 }
 
 function renderMe(){
   if(!me){$('#me').innerHTML='<div class="empty">위에서 내 이름을 눌러 주세요</div>';return}
   let h='';
   for(const [d,w,c1,c2] of WE){
-    for(const [ct,a] of [['1코트',c1],['2코트',c2]]){
-      const i=a.indexOf(me); if(i<0)continue;
+    for(const [n,ct,a] of [[1,'1코트',c1],[2,'2코트',c2]]){
+      const i=a.indexOf(me); if(i<0)continue; const sid=id(d,n);
       const role=i===0?(a.length>1?`담당 · 겹치기 ${a.slice(1).join(', ')}와 같이 누르기`:'담당 (혼자)'):`겹치기 · 담당 ${a[0]}와 같이 누르기`;
-      h+=`<div class="task"><div class="p">1순위 · 오픈 순간</div><div class="d">${d}(${w}) ${ct} 06-10시</div><div class="r">${role}<br>06-08 + 08-10 두 타임을 한 번에 담기</div></div>`;
+      h+=`<div class="task ${ST[sid]&&ST[sid].s==='ok'?'done':''}"><div class="p">1순위 · 오픈 순간 ${chip(sid)}</div><div class="d">${d}(${w}) ${ct} 06-10시</div><div class="r">${role}<br>06-08 + 08-10 두 타임을 한 번에 담기</div>${acts(sid)}</div>`;
     }
   }
   for(const [d,ps] of WD){
-    if(!ps.includes(me))continue;
+    if(!ps.includes(me))continue; const sid=id(d);
     const others=ps.filter(p=>p!==me);
-    h+=`<div class="task wd"><div class="p">2순위 · 1순위 칸이 차면 바로</div><div class="d">${d}(수) 1코트 18-22시</div><div class="r">같이 누르기: ${others.join(', ')}<br>18-20 + 20-22 두 타임을 한 번에 담기</div></div>`;
+    h+=`<div class="task wd ${ST[sid]&&ST[sid].s==='ok'?'done':''}"><div class="p">2순위 · 1순위 칸이 차면 바로 ${chip(sid)}</div><div class="d">${d}(수) 1코트 18-22시</div><div class="r">같이 누르기: ${others.join(', ')}<br>18-20 + 20-22 두 타임을 한 번에 담기</div>${acts(sid)}</div>`;
   }
-  h+='<div class="r" style="color:var(--sub);font-size:14px;margin-top:6px">단톡에 주말 «실패» 글이 뜨면 수요일보다 그 칸이 먼저예요.</div>';
+  h+='<div class="r" style="color:var(--sub);font-size:14px;margin-top:6px">맨 위에 빨간 실패 칸이 뜨면 수요일보다 그 칸이 먼저예요. 같은 칸을 누군가 «잡았어요» 누르면 모두에게 «잡음»으로 보여요.</div>';
   $('#me').innerHTML=h;
+}
+
+function renderAll(){renderBoard();renderNames();renderMe();renderDate();}
+
+async function mark(sid,s){
+  const cur=ST[sid];
+  if(cur&&cur.s===s){delete ST[sid];renderAll();await fetch(`${DB}/${sid}.json`,{method:'DELETE'}).catch(()=>{});return}
+  const v={s,by:me||'누군가',t:Date.now()};ST[sid]=v;renderAll();
+  try{const r=await fetch(`${DB}/${sid}.json`,{method:'PUT',body:JSON.stringify(v)});if(!r.ok)throw 0}catch(e){alertBar('저장이 안 됐어요. 인터넷 확인 후 다시 눌러 주세요')}
+}
+function alertBar(t){const n=document.createElement('div');n.className='alarm';n.textContent=t;$('#board').prepend(n);setTimeout(()=>n.remove(),4000)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sid]');if(!b)return;if(!me&&b.dataset.s){tab(true);window.scrollTo({top:$('#names').offsetTop-20,behavior:'smooth'});return}mark(b.dataset.sid,b.dataset.s)});
+
+function apply(path,data){
+  if(path==='/'){ST=data||{};}
+  else{const k=path.replace(/^\//,'').split('/')[0];if(path.split('/').length>2){ST[k]=Object.assign({},ST[k],{[path.split('/')[2]]:data})}else if(data==null)delete ST[k];else ST[k]=data;}
+}
+function connect(){
+  try{
+    const es=new EventSource(`${DB}.json`);
+    es.addEventListener('put',e=>{const m=JSON.parse(e.data);apply(m.path,m.data);online=true;renderAll()});
+    es.addEventListener('patch',e=>{const m=JSON.parse(e.data);for(const [k,v] of Object.entries(m.data||{}))apply((m.path==='/'?'':m.path)+'/'+k,v);renderAll()});
+    es.onerror=()=>{online=false;renderBoard()};
+    es.onopen=()=>{online=true;renderBoard()};
+  }catch(e){setInterval(async()=>{try{ST=await (await fetch(`${DB}.json`)).json()||{};online=true;renderAll()}catch(_){}},5000)}
 }
 
 function tab(p){
@@ -154,7 +224,7 @@ function tab(p){
   $('#vPerson').hidden=!p;$('#vDate').hidden=p;
 }
 $('#tPerson').onclick=()=>tab(true);$('#tDate').onclick=()=>tab(false);
-renderNames();renderMe();renderDate();
+renderAll();connect();
 if(location.hash==='#date')tab(false);
 if(/Android/i.test(navigator.userAgent))$('#smash').href='intent://#Intent;scheme=smaxh;package=com.tennisclientapp;end';
 </script>
