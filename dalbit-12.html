@@ -25,6 +25,13 @@ h1{font-size:22px;margin:8px 0 2px}
 .rules li{margin:4px 0}
 .rules .ex{font-size:15px;font-weight:500;color:var(--sub);background:#f5f3ee;border-radius:8px;padding:6px 8px;margin-top:4px}
 .rules .ex b{color:#6741d9}
+.tg{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;margin:6px 0}
+.tg .hd,.tg .cells{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;text-align:center}
+.tg .hd span{font-size:12px;color:var(--sub);text-align:left}
+.tg .cells i{height:26px;border-radius:4px;background:#e9e7f5}
+.tg .cells i.on{background:#5f3dc4}
+.tg .cap{font-size:13px;color:#5f3dc4;font-weight:700;margin-top:4px}
+.tg .btn{margin-top:6px;background:#5f3dc4;color:#fff;text-align:center;border-radius:8px;padding:7px;font-weight:700;font-size:14px}
 .tabs{display:flex;gap:6px;margin:16px 0 10px;background:#ebe7de;padding:4px;border-radius:12px}
 .tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:9px;font:inherit;font-weight:600;color:var(--sub)}
 .tabs button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -93,7 +100,9 @@ h1{font-size:22px;margin:8px 0 2px}
     <ol>
       <li><b>1순위</b> 오픈 즉시 <b>주말</b> 06-10시</li>
       <li><b style="color:var(--wd)">2순위</b> 수요일 1코트 18-22시</li>
-      <li>시간 칸 한 번에 연속 선택 → 예약하기<div class="ex">예) 주말: <b>06·07·08·09</b> 4칸 = 06-10시<br>수요일: <b>18·19·20·21</b> 4칸 = 18-22시</div></li>
+      <li><b>1인 4시간</b> 예약<div class="ex">예) 주말은 06·07·08·09 네 칸을 이어서 누르고 «예약하기»
+<div class="tg"><div class="hd"><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span></div><div class="cells"><i></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div><div class="cap">06:00 → 10:00 (4시간)</div><div class="btn">예약하기</div></div>
+수요일은 18·19·20·21 네 칸 = 18-22시</div></li>
       <li>끝나면 <b style="color:var(--ok)">잡았어요</b> / <b style="color:#e03131">실패</b></li>
       <li>10분 전 로그인·결제수단 확인</li>
     </ol>
