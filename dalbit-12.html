@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>12월 달빛 코트 예약</title>
+<meta name="description" content="12월 달빛 모나크 테니스 클럽 코트 예약 담당표 — 날짜별·사람별 보기">
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#1d2430;--sub:#6b7280;--line:#e5e1d8;--we:#e8590c;--we-bg:#fff1e6;--wd:#1c7ed6;--wd-bg:#e7f1fc;--ok:#2b8a3e;--btn:#111827}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 120px}
+h1{font-size:22px;margin:8px 0 2px}
+.lead{color:var(--sub);font-size:14px;margin:0 0 14px}
+.rules{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:14px}
+.rules b{color:var(--we)}
+.rules ol{margin:6px 0 0;padding-left:20px}
+.rules li{margin:3px 0}
+.tabs{display:flex;gap:6px;margin:16px 0 10px;background:#ebe7de;padding:4px;border-radius:12px}
+.tabs button{flex:1;border:0;background:transparent;padding:10px;border-radius:9px;font:inherit;font-weight:600;color:var(--sub)}
+.tabs button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.sec{font-size:13px;font-weight:700;color:var(--sub);margin:18px 2px 6px;letter-spacing:.02em}
+.day{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:8px 0}
+.day h3{margin:0 0 6px;font-size:16px;display:flex;align-items:center;gap:8px}
+.tag{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px}
+.tag.we{background:var(--we-bg);color:var(--we)}
+.tag.wd{background:var(--wd-bg);color:var(--wd)}
+.row{display:flex;gap:10px;padding:6px 0;border-top:1px dashed var(--line);font-size:15px}
+.row:first-of-type{border-top:0}
+.ct{flex:0 0 52px;font-weight:700}
+.who{flex:1}
+.who .m{font-weight:600}
+.who .x{color:var(--sub);font-size:13px}
+.hl{background:#fff3bf;border-radius:4px;padding:0 3px}
+.names{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.names button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:10px 4px;font:inherit;font-size:15px}
+.names button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.me{margin-top:14px}
+.task{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--we);border-radius:12px;padding:12px 14px;margin:8px 0}
+.task.wd{border-left-color:var(--wd)}
+.task .p{font-size:12px;font-weight:700;color:var(--we)}
+.task.wd .p{color:var(--wd)}
+.task .d{font-size:19px;font-weight:700;margin:2px 0}
+.task .r{font-size:14px;color:var(--sub)}
+.empty{color:var(--sub);font-size:14px;text-align:center;padding:24px 0}
+.go{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
+.go a{display:block;max-width:528px;margin:0 auto;text-align:center;background:var(--btn);color:#fff;text-decoration:none;font-weight:700;font-size:17px;padding:15px;border-radius:14px}
+.go small{display:block;font-weight:400;font-size:12px;opacity:.75}
+.foot{color:var(--sub);font-size:12px;margin-top:18px}
+@media (max-width:360px){.names{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>12월 달빛 코트 예약</h1>
+  <p class="lead">달빛 모나크 테니스 클럽 · 1코트 · 2코트</p>
+
+  <div class="rules">
+    <b>주말은 꼭 잡아야 해요.</b> 예약은 한 번에 열려요.
+    <ol>
+      <li><b>1순위</b> 오픈 순간 전원 주말. 주말 06-10시(2타임 한 번에)</li>
+      <li>같은 칸에 두 명이면 같이 누르기. 다른 사람이 잡으면 내 쪽 실패가 정상</li>
+      <li>실패하면 바로 단톡에 «○일 ○코트 실패» → 보는 사람이 그 칸부터</li>
+      <li><b style="color:var(--wd)">2순위</b> 내 1순위 칸이 차면 수요일 1코트 18-22시(2타임 한 번에)</li>
+      <li>열리기 10분 전: 스매시 로그인 확인, 결제수단 미리 등록</li>
+    </ol>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button id="tPerson" class="on" role="tab">내 할 일</button>
+    <button id="tDate" role="tab">날짜별</button>
+  </div>
+
+  <div id="vPerson">
+    <div class="names" id="names"></div>
+    <div class="me" id="me"><div class="empty">위에서 내 이름을 눌러 주세요</div></div>
+  </div>
+  <div id="vDate" hidden></div>
+
+  <p class="foot">스매시 버튼은 달빛 모나크 테니스 클럽(하드) 화면으로 가요. 날짜·코트·시간은 직접 골라야 해요.<br>카톡에서 열리면 오른쪽 위 메뉴 → 다른 브라우저로 열기.</p>
+</div>
+
+<div class="go"><a id="smash" href="https://smaxh.com/ko-KR/courts/bb29a12d-1e76-421c-9e7b-c7443bcacd8e" target="_blank" rel="noopener">스매시 달빛 테니스장 열기<small>달빛 모나크 테니스 클럽 (하드)</small></a></div>
+
+<script>
+const PEOPLE=['김상열','김재홍','동진웅','심태현','임우기','최종교','박병규','이길춘','이결','강은수','황기철','서정범','맹승호','이재상','박정우','조용걸','최현민','이진영','유상용','김시형','유형민','양창규'];
+// 1순위: 주말 [날짜, 요일, 1코트[담당, 겹치기...], 2코트[...]]
+const WE=[
+ ['12/5','토',['김상열','이진영'],['동진웅','심태현']],
+ ['12/6','일',['임우기','김시형'],['박병규','이길춘']],
+ ['12/12','토',['강은수','서정범'],['맹승호','양창규']],
+ ['12/13','일',['박정우'],['최현민']],
+ ['12/19','토',['유상용'],['유형민']],
+ ['12/20','일',['김재홍'],['조용걸']],
+ ['12/26','토',['최종교'],['이결']],
+ ['12/27','일',['황기철'],['이재상']],
+];
+// 2순위: 수요일 1코트 [날짜, 담당...]
+const WD=[
+ ['12/2',['김상열','김재홍','동진웅','심태현']],
+ ['12/9',['최종교','임우기','박병규','이길춘','이결']],
+ ['12/16',['서정범','강은수','황기철','맹승호','이재상']],
+ ['12/23',['조용걸','박정우','최현민','이진영']],
+ ['12/30',['김시형','유상용','유형민','양창규']],
+];
+const $=s=>document.querySelector(s);
+let me=null;try{me=localStorage.getItem('dalbit12_me')}catch(e){}
+if(!PEOPLE.includes(me))me=null;
+
+function nm(n){return me===n?`<span class="hl">${n}</span>`:n}
+function team(a){return `<span class="m">${nm(a[0])}</span>`+(a.length>1?` <span class="x">+ 겹치기 ${a.slice(1).map(nm).join(', ')}</span>`:'')}
+
+function renderDate(){
+  let h='<div class="sec">1순위 · 주말 06-10시 (2타임 한 번에)</div>';
+  for(const [d,w,c1,c2] of WE){
+    h+=`<div class="day"><h3>${d}(${w}) <span class="tag we">주말</span></h3>
+      <div class="row"><div class="ct">1코트</div><div class="who">${team(c1)}</div></div>
+      <div class="row"><div class="ct">2코트</div><div class="who">${team(c2)}</div></div></div>`;
+  }
+  h+='<div class="sec">2순위 · 수요일 1코트 18-22시 (같이 누르기)</div>';
+  for(const [d,ps] of WD){
+    h+=`<div class="day"><h3>${d}(수) <span class="tag wd">수요일</span></h3>
+      <div class="row"><div class="ct">1코트</div><div class="who">${ps.map(nm).join(', ')}</div></div></div>`;
+  }
+  $('#vDate').innerHTML=h;
+}
+
+function renderNames(){
+  $('#names').innerHTML=PEOPLE.map(p=>`<button class="${p===me?'on':''}">${p}</button>`).join('');
+  $('#names').querySelectorAll('button').forEach(b=>b.onclick=()=>{me=b.textContent;try{localStorage.setItem('dalbit12_me',me)}catch(e){};renderNames();renderMe();renderDate();});
+}
+
+function renderMe(){
+  if(!me){$('#me').innerHTML='<div class="empty">위에서 내 이름을 눌러 주세요</div>';return}
+  let h='';
+  for(const [d,w,c1,c2] of WE){
+    for(const [ct,a] of [['1코트',c1],['2코트',c2]]){
+      const i=a.indexOf(me); if(i<0)continue;
+      const role=i===0?(a.length>1?`담당 · 겹치기 ${a.slice(1).join(', ')}와 같이 누르기`:'담당 (혼자)'):`겹치기 · 담당 ${a[0]}와 같이 누르기`;
+      h+=`<div class="task"><div class="p">1순위 · 오픈 순간</div><div class="d">${d}(${w}) ${ct} 06-10시</div><div class="r">${role}<br>06-08 + 08-10 두 타임을 한 번에 담기</div></div>`;
+    }
+  }
+  for(const [d,ps] of WD){
+    if(!ps.includes(me))continue;
+    const others=ps.filter(p=>p!==me);
+    h+=`<div class="task wd"><div class="p">2순위 · 1순위 칸이 차면 바로</div><div class="d">${d}(수) 1코트 18-22시</div><div class="r">같이 누르기: ${others.join(', ')}<br>18-20 + 20-22 두 타임을 한 번에 담기</div></div>`;
+  }
+  h+='<div class="r" style="color:var(--sub);font-size:14px;margin-top:6px">단톡에 주말 «실패» 글이 뜨면 수요일보다 그 칸이 먼저예요.</div>';
+  $('#me').innerHTML=h;
+}
+
+function tab(p){
+  $('#tPerson').classList.toggle('on',p);$('#tDate').classList.toggle('on',!p);
+  $('#vPerson').hidden=!p;$('#vDate').hidden=p;
+}
+$('#tPerson').onclick=()=>tab(true);$('#tDate').onclick=()=>tab(false);
+renderNames();renderMe();renderDate();
+if(location.hash==='#date')tab(false);
+</script>
+</body>
+</html>
