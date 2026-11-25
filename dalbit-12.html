@@ -88,6 +88,20 @@ h1{font-size:22px;margin:8px 0 2px}
 .cal .c .b i.ok{background:var(--ok);color:#fff}.cal .c .b i.fail{background:#e03131;color:#fff}
 .legend{display:flex;gap:12px;font-size:14px;color:var(--sub);margin-top:6px;justify-content:center}
 .legend i{display:inline-block;width:13px;height:13px;border-radius:3px;margin-right:3px;vertical-align:-1px}
+.cnum{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:15px;flex-wrap:wrap}
+.cnum input,.xf select,.xf input{font:inherit;font-size:17px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+.cnum input{width:64px;text-align:center}
+.cnum button,.xf button{border:0;background:var(--ink);color:#fff;border-radius:8px;padding:8px 12px;font:inherit;font-weight:700;font-size:15px}
+.cnum .got{font-weight:800;color:var(--ok)}
+.cnum .lk{border:1px solid var(--line);background:#fff;color:var(--sub);font-weight:600}
+.xf{background:var(--card);border:1px dashed #b197fc;border-radius:12px;padding:12px 14px;margin:14px 0 8px}
+.xf h4{margin:0 0 8px;font-size:16px;color:#5f3dc4}
+.xf .fr{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:15px}
+.xf input{width:60px;text-align:center}
+.xl{margin-top:8px}
+.xl div{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px dashed var(--line);font-size:16px;font-weight:600}
+.xl button{border:1px solid var(--line);background:#fff;color:#e03131;border-radius:8px;padding:4px 10px;font:inherit;font-size:14px}
+.cal .c .b i.x{background:#7048e8;color:#fff}
 .net{font-size:12px;color:var(--sub);text-align:right;margin-top:4px}
 @media (max-width:360px){.names{grid-template-columns:repeat(3,1fr)}}
 </style>
@@ -160,16 +174,30 @@ const SLOTS=[];
 for(const [d,w,c1,c2] of WE){SLOTS.push({id:id(d,1),label:`${d}(${w}) 1코트`,we:1,ps:c1});SLOTS.push({id:id(d,2),label:`${d}(${w}) 2코트`,we:1,ps:c2});}
 for(const [d,ps] of WD)SLOTS.push({id:id(d),label:`${d}(수) 1코트`,we:0,ps});
 let ST={},online=false;
+// 실제로 잡은 코트 번호·추가로 잡은 칸 — 저장 규칙(s/by/t만 허용)에 맞춰 번호는 키 이름에 담는다
+//  c-<칸id>-<코트번호>  : 담당 칸을 몇 번 코트로 잡았는지
+//  x-<MMDD>-<코트>-<시작>-<끝> : 담당 외에 따로 잡은 칸
+function courtOf(sid){const k=Object.keys(ST).find(k=>k.startsWith('c-'+sid+'-'));return k?{n:k.slice(sid.length+3),by:ST[k].by,k}:null}
+function extras(){return Object.keys(ST).filter(k=>/^x-\d{4}-\d{1,2}-\d{2}-\d{2}$/.test(k)).map(k=>{const [,md,c,a,b]=k.split('-');return {k,m:+md.slice(0,2),d:+md.slice(2),c,a,b,by:ST[k].by}}).sort((p,q)=>p.m-q.m||p.d-q.d||p.a-q.a||p.c-q.c)}
+const WK=['일','월','화','수','목','금','토'];
+function xLabel(x){return `${x.m}/${x.d}(${WK[new Date(2026,x.m-1,x.d).getDay()]}) ${x.c}번 코트 ${x.a}-${x.b}시`}
+async function put(k,v){try{const r=await fetch(`${DB}/${k}.json`,{method:v?'PUT':'DELETE',body:v?JSON.stringify(v):undefined});if(!r.ok)throw 0;return true}catch(e){alertBar('저장이 안 됐어요. 인터넷 확인 후 다시 눌러 주세요');return false}}
+async function setCourt(sid,n){
+  const old=courtOf(sid);
+  if(old){delete ST[old.k];await put(old.k,null)}
+  if(n){const k=`c-${sid}-${n}`;ST[k]={s:'ok',by:me||'누군가',t:Date.now()};renderAll();await put(k,ST[k])}else renderAll();
+}
 
 function nm(n){return me===n?`<span class="hl">${n}</span>`:n}
 function team(a){return `<span class="m">${nm(a[0])}</span>`+(a.length>1?` <span class="x">+ 겹치기 ${a.slice(1).map(nm).join(', ')}</span>`:'')}
-function chip(sid){const v=ST[sid];if(!v)return '<span class="st wait">대기</span>';return v.s==='ok'?`<span class="st ok">잡음 · ${v.by}</span>`:`<span class="st fail">실패 · ${v.by}</span>`}
+function chip(sid){const v=ST[sid];if(!v)return '<span class="st wait">대기</span>';const c=courtOf(sid);return v.s==='ok'?`<span class="st ok">잡음${c?' '+c.n+'번 코트':''} · ${v.by}</span>`:`<span class="st fail">실패 · ${v.by}</span>`}
 
 function renderBoard(){
   const ok=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='ok');
   const wok=ok.filter(x=>x.we).length, dok=ok.length-wok;
   const fails=SLOTS.filter(x=>ST[x.id]&&ST[x.id].s==='fail').sort((a,b)=>b.we-a.we);
-  let h=`<div class="sum">12월 예약 현황 <span>주말 ${wok}/16 · 수요일 ${dok}/5 잡음</span></div>`;
+  const xs=extras();
+  let h=`<div class="sum">12월 예약 현황 <span>주말 ${wok}/16 · 수요일 ${dok}/5 잡음${xs.length?` · 추가 ${xs.length}칸`:''}</span></div>`;
   if(fails.length)h+=`<div class="alarm"><b>❌ 놓친 칸</b>${fails.map(x=>`<div>${x.label} ${x.we?'06-10시':'18-22시'} <span style="font-weight:400">(${ST[x.id].by})</span></div>`).join('')}</div>`;
   h+=calendar();
   h+=`<div class="net">${online?'● 실시간 연결됨':'○ 연결 중…'}</div>`;
@@ -178,20 +206,27 @@ function renderBoard(){
 }
 
 function calendar(){
+  const ex={};for(const x of extras())if(x.m===12)(ex[x.d]=ex[x.d]||[]).push(x);
   const by={};for(const x of SLOTS){const d=+x.label.split('/')[1].split('(')[0];(by[d]=by[d]||[]).push(x)}
   let h='<div class="cal">'+['일','월','화','수','목','금','토'].map((w,i)=>`<div class="h ${i==0?'sun':i==6?'sat':''}">${w}</div>`).join('');
   const first=new Date(2026,11,1).getDay();
   for(let i=0;i<first;i++)h+='<div></div>';
   for(let d=1;d<=31;d++){
-    const xs=by[d];
-    if(!xs){h+=`<div class="c"><div class="n">${d}</div></div>`;continue}
-    const b=xs.map(x=>{const v=ST[x.id];const n=x.we?x.label.match(/(\d)코트/)[1]:'1';return `<i class="${v?v.s:''}">${n}</i>`}).join('');
+    const xs=by[d]||[];
+    if(!xs.length&&!ex[d]){h+=`<div class="c"><div class="n">${d}</div></div>`;continue}
+    const b=xs.map(x=>{const v=ST[x.id];const c=v&&v.s==='ok'&&courtOf(x.id);const n=c?c.n:x.we?x.label.match(/(\d)코트/)[1]:'1';return `<i class="${v?v.s:''}">${n}</i>`}).join('')+(ex[d]||[]).map(x=>`<i class="x">${x.c}</i>`).join('');
     h+=`<div class="c has" data-d="${d}"><div class="n">${d}</div><div class="b">${b}</div></div>`;
   }
-  return h+'</div><div class="legend"><span><i style="background:#e9ecef"></i>대기</span><span><i style="background:var(--ok)"></i>잡음</span><span><i style="background:#e03131"></i>실패</span><span>숫자 = 코트</span></div>';
+  return h+'</div><div class="legend"><span><i style="background:#e9ecef"></i>대기</span><span><i style="background:var(--ok)"></i>잡음</span><span><i style="background:#e03131"></i>실패</span><span><i style="background:#7048e8"></i>추가</span><span>숫자 = 코트</span></div>';
 }
 
-function acts(sid){const v=ST[sid]||{};return `<div class="acts"><button class="ok ${v.s==='ok'?'on':''}" data-sid="${sid}" data-s="ok">✅ 잡았어요</button><button class="fail ${v.s==='fail'?'on':''}" data-sid="${sid}" data-s="fail">❌ 실패</button></div>`}
+function cnum(sid){
+  if(!ST[sid]||ST[sid].s!=='ok')return '';
+  const c=courtOf(sid);
+  if(c)return `<div class="cnum">잡은 코트: <span class="got">${c.n}번 코트</span> <button class="lk" data-cedit="${sid}">바꾸기</button></div>`;
+  return `<div class="cnum">몇 번 코트로 잡았어요? <select id="cn-${sid}"><option value="">고르기</option>${Array.from({length:16},(_,i)=>`<option value="${i+1}">${i+1}번</option>`).join('')}</select> <button data-cset="${sid}">저장</button></div>`;
+}
+function acts(sid){const v=ST[sid]||{};return cnum(sid)+`<div class="acts"><button class="ok ${v.s==='ok'?'on':''}" data-sid="${sid}" data-s="ok">✅ 잡았어요</button><button class="fail ${v.s==='fail'?'on':''}" data-sid="${sid}" data-s="fail">❌ 실패</button></div>`}
 
 function renderDate(){
   let h='<div class="sec">1순위 · 주말 06-10시 (2타임 한 번에)</div>';
@@ -205,6 +240,8 @@ function renderDate(){
     h+=`<div class="day" id="d${d.split('/')[1]}"><h3>${d}(수) <span class="tag wd">수요일</span></h3>
       <div class="row"><div class="ct">1코트</div><div class="who">${ps.map(nm).join(', ')}${chip(id(d))}</div></div></div>`;
   }
+  const xs=extras();
+  if(xs.length){h+='<div class="sec">추가로 잡은 칸</div><div class="day">'+xs.map(x=>`<div class="row"><div class="ct">${x.m}/${x.d}</div><div class="who"><span class="m">${x.c}번 코트 ${x.a}-${x.b}시</span> <span class="x">· ${nm(x.by)}</span></div></div>`).join('')+'</div>';}
   $('#vDate').innerHTML=h;
 }
 
@@ -237,20 +274,38 @@ function renderMe(){
     const others=ps.filter(p=>p!==me);
     h+=`<div class="task wd ${ST[sid]&&ST[sid].s==='ok'?'done':''}"><div class="p">2순위 · 1순위 칸이 차면 바로 ${chip(sid)}</div><div class="d">${d}(수) 1코트 18-22시</div><div class="r">같이 누르기: ${others.join(', ')}</div>${acts(sid)}</div>`;
   }
+  const mine=extras().filter(x=>x.by===me);
+  const hrs=n=>Array.from({length:19},(_,i)=>i+5).map(x=>`<option ${x===n?'selected':''}>${String(x).padStart(2,'0')}</option>`).join('');
+  h+=`<div class="xf"><h4>＋ 다른 칸도 잡았어요</h4><div class="fr">12월 <select id="xd">${Array.from({length:31},(_,i)=>`<option value="${i+1}">${i+1}일(${WK[new Date(2026,11,i+1).getDay()]})</option>`).join('')}</select>
+    <select id="xc"><option value="">코트</option>${Array.from({length:16},(_,i)=>`<option value="${i+1}">${i+1}번</option>`).join('')}</select> 코트</div>
+    <div class="fr" style="margin-top:6px"><select id="xa">${hrs(6)}</select>시 ~ <select id="xb">${hrs(10)}</select>시 <button id="xgo">저장</button></div>
+    ${mine.length?`<div class="xl">${mine.map(x=>`<div><span>${xLabel(x)}</span><button data-xdel="${x.k}">지우기</button></div>`).join('')}</div>`:''}</div>`;
   $('#me').innerHTML=h;
+  $('#xgo').onclick=async()=>{
+    const d=+$('#xd').value,c=parseInt($('#xc').value,10),a=$('#xa').value,b=$('#xb').value;
+    if(!(c>=1&&c<=16)){alertBar('코트 번호를 골라 주세요');$('#xc').focus();return}
+    if(+b<=+a){alertBar('끝 시간이 시작보다 늦어야 해요');return}
+    const k=`x-12${String(d).padStart(2,'0')}-${c}-${a}-${b}`;
+    if(ST[k]&&ST[k].by!==me){alertBar(`그 칸은 이미 ${ST[k].by}님이 적었어요`);return}
+    ST[k]={s:'ok',by:me,t:Date.now()};renderAll();await put(k,ST[k]);
+  };
 }
 
 function renderAll(){renderBoard();renderNames();renderMe();renderDate();}
 
 async function mark(sid,s){
   const cur=ST[sid];
-  if(cur&&cur.s===s){delete ST[sid];renderAll();await fetch(`${DB}/${sid}.json`,{method:'DELETE'}).catch(()=>{});return}
+  if(cur&&cur.s===s){const c=courtOf(sid);if(c){delete ST[c.k];put(c.k,null)}delete ST[sid];renderAll();await fetch(`${DB}/${sid}.json`,{method:'DELETE'}).catch(()=>{});return}
   if(s==='fail'&&cur&&cur.s==='ok'&&cur.by!==(me||'누군가')){alertBar(`이미 ${cur.by}님이 잡았어요. 실패로 바꾸지 않아요 👍`);return}
   const v={s,by:me||'누군가',t:Date.now()};ST[sid]=v;renderAll();
   try{const r=await fetch(`${DB}/${sid}.json`,{method:'PUT',body:JSON.stringify(v)});if(r.status===401||r.status===403){alertBar('그 사이 다른 회원이 잡았어요 👍');return}if(!r.ok)throw 0}catch(e){alertBar('저장이 안 됐어요. 인터넷 확인 후 다시 눌러 주세요')}
 }
 function alertBar(t){const n=document.createElement('div');n.className='alarm';n.textContent=t;$('#board').prepend(n);setTimeout(()=>n.remove(),4000)}
-document.addEventListener('click',e=>{const b=e.target.closest('[data-sid]');if(!b)return;if(!me&&b.dataset.s){tab(true);window.scrollTo({top:$('#names').offsetTop-20,behavior:'smooth'});return}mark(b.dataset.sid,b.dataset.s)});
+document.addEventListener('click',e=>{
+  const cs=e.target.closest('[data-cset]');if(cs){const n=parseInt(document.getElementById('cn-'+cs.dataset.cset).value,10);if(!(n>=1&&n<=16)){alertBar('코트 번호를 골라 주세요');return}setCourt(cs.dataset.cset,n);return}
+  const ce=e.target.closest('[data-cedit]');if(ce){setCourt(ce.dataset.cedit,0);return}
+  const xd=e.target.closest('[data-xdel]');if(xd){delete ST[xd.dataset.xdel];renderAll();put(xd.dataset.xdel,null);return}
+  const b=e.target.closest('[data-sid]');if(!b)return;if(!me&&b.dataset.s){tab(true);window.scrollTo({top:$('#names').offsetTop-20,behavior:'smooth'});return}mark(b.dataset.sid,b.dataset.s)});
 
 function apply(path,data){
   if(path==='/'){ST=data||{};}
