@@ -1,0 +1,126 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>테니홀릭 결산대회 선착순 조편성</title><style>body{margin:0}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&display=swap">
+<style>
+:root{--bg:#EEF2E4;--card:#FFFFFF;--fg:#14261B;--mut:#5E6E60;--line:#D6DECB;--a:#1F4E8C;--aSoft:#E3ECF8;--b:#4E7A00;--bSoft:#E8F1D6;--ball:#D9F27A;--done:#C9D2BE;--warn:#B3401E}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101A13;--card:#18241B;--fg:#E8EFE2;--mut:#9DAE9F;--line:#2C3B2F;--a:#7FB0F0;--aSoft:#1C2B40;--b:#A9D45A;--bSoft:#223315;--ball:#D9F27A;--done:#3A4A3D;--warn:#F08A64;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101A13;--card:#18241B;--fg:#E8EFE2;--mut:#9DAE9F;--line:#2C3B2F;--a:#7FB0F0;--aSoft:#1C2B40;--b:#A9D45A;--bSoft:#223315;--ball:#D9F27A;--done:#3A4A3D;--warn:#F08A64;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:16px}
+.wrap{max-width:720px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+h1{font-family:"Black Han Sans","Apple SD Gothic Neo",sans-serif;font-weight:400;font-size:26px;margin:0;text-wrap:balance;word-break:keep-all}
+.sub{color:var(--mut);font-size:15px;line-height:1.5;margin-top:4px}
+.card{background:var(--card);border-radius:16px;padding:14px;border:1px solid var(--line)}
+.lbl{font-size:13px;letter-spacing:.06em;color:var(--mut);margin-bottom:8px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.col h2{margin:0 0 8px;font-size:18px;display:flex;align-items:center;gap:6px}
+.col.A h2{color:var(--a)} .col.B h2{color:var(--b)}
+.names{display:flex;flex-direction:column;gap:8px}
+.nm{appearance:none;border:2px solid var(--line);background:var(--card);color:var(--fg);font:inherit;font-size:19px;padding:12px 10px;border-radius:12px;text-align:left;display:flex;justify-content:space-between;align-items:center;cursor:pointer;min-height:52px}
+.col.A .nm{border-color:var(--a);background:var(--aSoft)} .col.B .nm{border-color:var(--b);background:var(--bSoft)}
+.nm.drawn{background:var(--card);border-color:var(--done);color:var(--mut);cursor:default}
+.nm.out{opacity:.45;text-decoration:line-through;border-style:dashed}
+.num{font-family:"Black Han Sans",sans-serif;font-size:22px;min-width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;background:var(--ball);color:#14261B}
+.tbl{width:100%;border-collapse:collapse;font-size:17px}
+.tbl td{padding:9px 4px;border-top:1px solid var(--line)}
+.tbl td.n{width:44px}
+.grp{font-size:13px;color:var(--mut);font-weight:700;padding-top:12px}
+.grp td{border-top:none;padding-top:14px}
+.pa{color:var(--a)} .pb{color:var(--b)} .em{color:var(--done)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{appearance:none;font:inherit;font-size:15px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg);cursor:pointer}
+.btn.warn{color:var(--warn);border-color:var(--warn)}
+.ov{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 92%,transparent);display:grid;place-items:center;z-index:20;padding:24px}
+.ovc{text-align:center}
+.ovn{font-size:30px;margin-bottom:12px}
+.big{font-family:"Black Han Sans",sans-serif;font-size:120px;width:190px;height:190px;border-radius:50%;background:var(--ball);color:#14261B;display:grid;place-items:center;margin:0 auto;box-shadow:inset -14px -14px 0 rgba(0,0,0,.08)}
+.big.spin{animation:wob .12s infinite alternate}
+@keyframes wob{from{transform:rotate(-8deg) scale(.96)}to{transform:rotate(8deg) scale(1.03)}}
+.ovm{font-size:22px;margin-top:16px;min-height:60px;line-height:1.4}
+.sched td{text-align:center;font-size:15px;padding:8px 2px}
+.sched td:first-child{font-weight:700;color:var(--mut);width:56px}
+.hl td{background:color-mix(in srgb,var(--ball) 30%,transparent)}
+.addrow{display:flex;gap:6px;margin-top:8px}
+.addrow input{flex:1;min-width:0;font:inherit;font-size:16px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.rl{margin:0;padding-left:18px;line-height:1.7;font-size:15px}.rl b{display:inline-block;min-width:52px;color:var(--b)}.tn{display:block;font-size:13px;color:var(--mut);line-height:1.3}.sched td{vertical-align:middle}
+.hint{font-size:14px;color:var(--mut);line-height:1.5}
+@media (max-width:380px){.nm{font-size:17px}.big{width:160px;height:160px;font-size:96px}}
+</style>
+
+</head><body><div class="wrap">
+  <div>
+    <h1>🎾 테니홀릭 결산대회 선착순 조편성</h1>
+    <div class="sub">11/29(일) 06:00 달빛공원 · <b>자기 이름</b>을 누르세요.<br>A·B 각각 <b>누른 순서대로 1번, 2번…</b> 번호가 붙고, <b>같은 번호끼리 한 팀</b>이에요.<br>1~4번은 4팀조, 5~7번은 3팀조예요.</div>
+  </div>
+
+  <div class="card">
+    <div class="cols">
+      <div class="col A"><h2>A그룹</h2><div class="names" id="listA"></div></div>
+      <div class="col B"><h2>B그룹</h2><div class="names" id="listB"></div></div>
+    </div>
+    
+  </div>
+
+  <div class="card">
+    <div class="lbl">팀 · 조 편성</div>
+    <table class="tbl" id="teams"></table>
+  </div>
+
+  <div class="card" id="schedCard">
+    <div class="lbl">대진표 · 1코트 / 2코트</div>
+    <table class="tbl sched" id="sched"></table>
+    
+  </div>
+
+  <div class="card"><div class="lbl">경기 방식</div><ul class="rl">
+<li><b>짝</b> A·B 그룹에서 이름 누른 순서가 같은 사람끼리 한 팀 (7팀)</li>
+<li><b>조</b> 1~4번 팀 = 4팀조, 5~7번 팀 = 3팀조</li>
+<li><b>예선</b> 조별 풀리그 (4팀조 팀당 3경기, 3팀조 팀당 2경기)</li>
+<li><b>경기</b> 1:1에서 시작 · 6게임 먼저 따면 승 · 노애드</li>
+<li><b>조 순위</b> 승수 → 게임 득실차 → 다득점</li>
+<li><b>4강</b> 4팀조 1위 vs 3팀조 2위 / 3팀조 1위 vs 4팀조 2위</li>
+<li><b>결승</b> 4강 승자끼리 · 옆 코트에서 3·4위전</li>
+<li>시간은 예정이에요. 앞 경기가 끝나면 바로 다음 경기</li>
+<li>대회 끝나고 총회 · 식사까지 시간 비워 주세요</li></ul></div>
+  <div class="hint" id="status">불러오는 중…</div><div class="hint">잘못 눌렀으면 경기이사에게 말해 주세요. 고쳐 드려요.</div>
+
+</div>
+
+<div class="ov" id="ov" hidden><div class="ovc"><div class="ovn" id="ovName"></div><div class="big" id="ovBall">?</div><div class="ovm" id="ovMsg"></div><div class="row" style="justify-content:center;margin-top:14px"><button class="btn" id="ovNo">취소</button><button class="btn" id="ovYes" style="background:var(--b);color:#fff;border-color:var(--b)">네, 저예요</button><button class="btn" id="ovClose" hidden>확인</button></div></div></div>
+
+<script>
+const DB='https://matchmaker-28187-default-rtdb.asia-southeast1.firebasedatabase.app/th_draw/final1129/nums';
+const L={A:['김시형','조용걸','김재홍','서정범','유상용','최현민','이재상'],B:['이결','맹승호','양창규','이진영','심태현','황기철','박정우']};
+const T=7,H=4;let N={A:{},B:{}};let pend=null,busy=false;
+const $=id=>document.getElementById(id);
+const numOf=(g,n)=>{for(const k in N[g])if(N[g][k]===n)return +k;return null};
+function render(){
+  for(const g of ['A','B']){const el=$('list'+g);el.innerHTML='';
+    L[g].forEach(n=>{const k=numOf(g,n);const b=document.createElement('button');b.className='nm'+(k?' drawn':'');
+      b.innerHTML='<span></span>'+(k?`<span class="num">${k}</span>`:'');b.firstChild.textContent=n;b.onclick=()=>ask(g,n);el.appendChild(b)})}
+  let h='';for(let k=1;k<=T;k++){if(k===1)h+=`<tr class="grp"><td colspan="3">4팀조</td></tr>`;if(k===H+1)h+=`<tr class="grp"><td colspan="3">3팀조</td></tr>`;
+    const a=N.A[k],b=N.B[k];h+=`<tr><td class="n"><span class="num">${k}</span></td><td class="${a?'pa':'em'}">${a?esc(a):'A ?'}</td><td class="${b?'pb':'em'}">${b?esc(b):'B ?'}</td></tr>`}
+  $('teams').innerHTML=h;
+  const C='①②③④⑤⑥⑦';
+  const tn=k=>{const a=N.A[k],b=N.B[k];return `<b>${C[k-1]}</b><span class="tn">${a||b?esc((a||'?')+'·'+(b||'?')):'&nbsp;'}</span>`};
+  const m=(x,y)=>`${tn(x)}<span class="tn">vs</span>${tn(y)}`;
+  const s=[['06:10',m(1,2),m(3,4)],['06:40',m(1,3),m(5,6)],['07:10',m(2,4),m(6,7)],['07:40',m(1,4),m(2,3)],['08:10',m(5,7),'친선 한 판'],['08:40','<span class="tn">4강 1</span>4팀조 1위<br>vs 3팀조 2위','<span class="tn">4강 2</span>3팀조 1위<br>vs 4팀조 2위'],['09:10','🏆 결승','3·4위전']];
+  $('sched').innerHTML='<tr><td></td><td>1코트</td><td>2코트</td></tr>'+s.map((r,i)=>`<tr${i>4?' class="hl"':''}><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+  const c=Object.keys(N.A).length+Object.keys(N.B).length;$('status').textContent=`실시간 · ${c}/14명 눌렀어요`+(c===14?' · 조편성 끝! 🎉':'');
+}
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function ask(g,n){if(busy||numOf(g,n))return;pend={g,n};$('ovName').textContent=n+' 님 맞아요?';$('ovBall').textContent='?';$('ovMsg').textContent=(g==='A'?'A그룹':'B그룹')+' · 지금 누르면 다음 순번이 붙어요';
+  $('ovYes').hidden=false;$('ovNo').hidden=false;$('ovClose').hidden=true;$('ov').hidden=false}
+$('ovNo').onclick=()=>{$('ov').hidden=true;pend=null};
+$('ovClose').onclick=()=>{$('ov').hidden=true};
+$('ovYes').onclick=async()=>{if(!pend||busy)return;busy=true;const {g,n}=pend;$('ovYes').hidden=true;$('ovNo').hidden=true;$('ovMsg').textContent='순번 받는 중…';$('ovBall').classList.add('spin');
+  await load();let got=numOf(g,n);
+  for(let k=1;k<=T&&!got;k++){if(N[g][k])continue;try{const r=await fetch(`${DB}/${g}/${k}.json`,{method:'PUT',body:JSON.stringify(n)});if(r.ok){got=k;N[g][k]=n}else{await load()}}catch(e){break}}
+  $('ovBall').classList.remove('spin');
+  if(got){const o=N[g==='A'?'B':'A'][got];$('ovBall').textContent=got;$('ovMsg').innerHTML='';$('ovMsg').append(`${got}번 · ${got<=H?'4팀조':'3팀조'}`,document.createElement('br'),o?`짝은 ${o}! 🤝`:'짝은 아직 안 눌렀어요')}
+  else{$('ovBall').textContent='!';$('ovMsg').textContent='인터넷 연결을 확인하고 다시 눌러 주세요'}
+  $('ovClose').hidden=false;busy=false;pend=null;render()};
+async function load(){try{const r=await fetch(DB+'.json?x='+Date.now());const j=await r.json()||{};N={A:norm(j.A),B:norm(j.B)};render()}catch(e){$('status').textContent='연결이 끊겼어요. 잠시 후 다시 시도해요'}}
+function norm(o){const m={};if(Array.isArray(o))o.forEach((v,i)=>{if(v)m[i]=v});else if(o)for(const k in o)m[k]=o[k];return m}
+try{const es=new EventSource(DB+'.json');es.addEventListener('put',()=>load());es.addEventListener('patch',()=>load());es.onerror=()=>{}}catch(e){}
+setInterval(load,5000);render();load();
+</script></body></html>
